@@ -14,8 +14,10 @@ function App() {
     localStorage.setItem("todos", JSON.stringify(todos));
   }, [todos]);
 
+  // Untuk membuat input text
   const [input, setInput] = useState("");
 
+  // Untuk atur dark mode
   const [darkMode, setDarkMode] = useState(() => {
     const data = localStorage.getItem("darkMode");
     return data === "true";
@@ -24,6 +26,16 @@ function App() {
   useEffect(() => {
     localStorage.setItem("darkMode", String(darkMode));
   }, [darkMode]);
+
+  // Untuk kondisi awal buka web default filter "all"
+  const [filter, setFilter] = useState("all");
+
+  // Untuk memfilter all, pending dan done
+  const filteredTodos = todos.filter((todo) => {
+    if (filter === "done") return todo.done;
+    if (filter === "pending") return !todo.done;
+    return true;
+  });
 
   function tambahTugas() {
     if (input.trim() === "") return;
@@ -92,8 +104,37 @@ function App() {
           </button>
         </div>
 
+        <div className="flex gap-2 mb-6">
+          <button
+            onClick={() => setFilter("all")}
+            className={`px-3 py-1 rounded-lg ${
+              filter === "all" ? "bg-blue-600 text-white" : "bg-gray-200 text-black"
+            }`}
+          >
+            All
+          </button>
+
+          <button
+            onClick={() => setFilter("pending")}
+            className={`px-3 py-1 rounded-lg ${
+              filter === "pending" ? "bg-blue-600 text-white" : "bg-gray-200 text-black"
+            }`}
+          >
+            Pending
+          </button>
+
+          <button
+            onClick={() => setFilter("done")}
+            className={`px-3 py-1 rounded-lg ${
+              filter === "done" ? "bg-blue-600 text-white" : "bg-gray-200 text-black"
+            }`}
+          >
+            Done
+          </button>
+        </div>
+
         <div className="space-y-3">
-          {todos.map((todo, index) => (
+          {filteredTodos.map((todo, index) => (
             <div
               key={index}
               className={`flex items-center justify-between p-3 rounded-xl ${
