@@ -37,6 +37,18 @@ function App() {
     return true;
   });
 
+  // Variable untuk hitung total task (jumlah isi array)
+  const totalTask = todos.length;
+
+  // Variable untuk hitung task done (ambil task yang done = true)
+  const doneTask = todos.filter((todo) => todo.done).length;
+
+  // Variable untuk hitung task pending (ambil task yang done = false / undone)
+  const pendingTask = todos.filter((todo) => !todo.done).length;
+
+  // Variable untuk state search (menyimpan tulisan user ketika search dengan menggambungkan status + filter)
+  const [search, setSearch] = useState("");
+
   function tambahTugas() {
     if (input.trim() === "") return;
 
@@ -108,7 +120,9 @@ function App() {
           <button
             onClick={() => setFilter("all")}
             className={`px-3 py-1 rounded-lg ${
-              filter === "all" ? "bg-blue-600 text-white" : "bg-gray-200 text-black"
+              filter === "all"
+                ? "bg-blue-600 text-white"
+                : "bg-gray-200 text-black"
             }`}
           >
             All
@@ -117,7 +131,9 @@ function App() {
           <button
             onClick={() => setFilter("pending")}
             className={`px-3 py-1 rounded-lg ${
-              filter === "pending" ? "bg-blue-600 text-white" : "bg-gray-200 text-black"
+              filter === "pending"
+                ? "bg-blue-600 text-white"
+                : "bg-gray-200 text-black"
             }`}
           >
             Pending
@@ -126,11 +142,30 @@ function App() {
           <button
             onClick={() => setFilter("done")}
             className={`px-3 py-1 rounded-lg ${
-              filter === "done" ? "bg-blue-600 text-white" : "bg-gray-200 text-black"
+              filter === "done"
+                ? "bg-blue-600 text-white"
+                : "bg-gray-200 text-black"
             }`}
           >
             Done
           </button>
+        </div>
+
+        <div className="grid grid-cols-3 gap-3 mb-6">
+          <div className="bg-blue-100 p-3 rounded-xl text-center text-black">
+            <p className="text-sm">Total</p>
+            <p className="text-2xl font-bold">{totalTask}</p>
+          </div>
+
+          <div className="bg-green-100 p-3 rounded-xl text-center text-black">
+            <p className="text-sm">Done</p>
+            <p className="text-2xl font-bold">{doneTask}</p>
+          </div>
+
+          <div className="bg-yellow-100 p-3 rounded-xl text-center text-black">
+            <p className="text-sm">Pending</p>
+            <p className="text-2xl font-bold">{pendingTask}</p>
+          </div>
         </div>
 
         <div className="space-y-3">
