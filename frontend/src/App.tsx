@@ -30,11 +30,17 @@ function App() {
   // Untuk kondisi awal buka web default filter "all"
   const [filter, setFilter] = useState("all");
 
-  // Untuk memfilter all, pending dan done
+  // Variable untuk state search (menyimpan tulisan user ketika search dengan menggambungkan status + filter)
+  const [search, setSearch] = useState("");
+
+  // Variable untuk memfilter all, pending dan done + component untuk search engine (cocokFilter untuk cek status, cocokSearch untuk cari tugas/search engine)
   const filteredTodos = todos.filter((todo) => {
-    if (filter === "done") return todo.done;
-    if (filter === "pending") return !todo.done;
-    return true;
+    const cocokFilter =
+      filter === "done" ? todo.done : filter === "pending" ? !todo.done : true;
+
+    const cocokSearch = todo.text.toLowerCase().includes(search.toLowerCase());
+
+    return cocokFilter && cocokSearch;
   });
 
   // Variable untuk hitung total task (jumlah isi array)
@@ -45,9 +51,6 @@ function App() {
 
   // Variable untuk hitung task pending (ambil task yang done = false / undone)
   const pendingTask = todos.filter((todo) => !todo.done).length;
-
-  // Variable untuk state search (menyimpan tulisan user ketika search dengan menggambungkan status + filter)
-  const [search, setSearch] = useState("");
 
   function tambahTugas() {
     if (input.trim() === "") return;
@@ -167,6 +170,18 @@ function App() {
             <p className="text-2xl font-bold">{pendingTask}</p>
           </div>
         </div>
+
+        <input
+          type="text"
+          placeholder="Cari tugas..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="w-full border rounded-xl px-4 py-2 mb-4"
+        />
+
+        {filteredTodos.length === 0 && (
+          <p className="text-center text-gray-400">Tidak ada tugas ditemukan</p>
+        )}
 
         <div className="space-y-3">
           {filteredTodos.map((todo, index) => (
