@@ -83,7 +83,7 @@ function App() {
 
   return (
     <div
-      className={`min-h-screen flex items-center justify-center p-4 ${
+      className={`min-h-screen flex items-center justify-center p-4 transition duration-500 ${
         darkMode ? "bg-slate-900" : "bg-slate-100"
       }`}
     >
@@ -95,7 +95,7 @@ function App() {
         <div className="flex justify-end mb-4">
           <button
             onClick={() => setDarkMode(!darkMode)}
-            className="px-4 py-2 rounded-xl border"
+            className="px-4 py-2 rounded-xl border transition duration-300 ease-in-out"
           >
             {darkMode ? "☀ Light" : "🌙 Dark"}
           </button>
@@ -108,12 +108,17 @@ function App() {
             placeholder="Masukkan tugas..."
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            className="flex-1 border rounded-xl px-4 py-2 outline-none focus:ring-2 focus:ring-blue-500"
+            className={`flex-1 border rounded-xl px-4 py-2 outline-none focus:ring-2 focus:ring-blue-500 transition duration-300
+              ${
+                darkMode
+                  ? "bg-slate-800 text-white placeholder:text-gray-400 border-slate-600"
+                  : "bg-white text-black placeholder:text-gray-500 border-gray-300"
+              }`}
           />
 
           <button
             onClick={tambahTugas}
-            className="bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700"
+            className="bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700 transition duration-300 ease-in-out"
           >
             Tambah
           </button>
@@ -122,7 +127,7 @@ function App() {
         <div className="flex gap-2 mb-6">
           <button
             onClick={() => setFilter("all")}
-            className={`px-3 py-1 rounded-lg ${
+            className={`px-3 py-1 rounded-lg transition duration-300 ease-in-out ${
               filter === "all"
                 ? "bg-blue-600 text-white"
                 : "bg-gray-200 text-black"
@@ -133,7 +138,7 @@ function App() {
 
           <button
             onClick={() => setFilter("pending")}
-            className={`px-3 py-1 rounded-lg ${
+            className={`px-3 py-1 rounded-lg transition duration-300 ease-in-out ${
               filter === "pending"
                 ? "bg-blue-600 text-white"
                 : "bg-gray-200 text-black"
@@ -144,7 +149,7 @@ function App() {
 
           <button
             onClick={() => setFilter("done")}
-            className={`px-3 py-1 rounded-lg ${
+            className={`px-3 py-1 rounded-lg transition duration-300 ease-in-out ${
               filter === "done"
                 ? "bg-blue-600 text-white"
                 : "bg-gray-200 text-black"
@@ -176,7 +181,11 @@ function App() {
           placeholder="Cari tugas..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full border rounded-xl px-4 py-2 mb-4"
+          className={`w-full border rounded-xl px-4 py-2 mb-4 transition duration-300 ${
+            darkMode
+              ? "bg-slate-800 text-white placeholder:text-gray-400 border-slate-600"
+              : "bg-white text-black placeholder:text-gray-500 border-gray-300"
+          }`}
         />
 
         {filteredTodos.length === 0 && (
@@ -187,7 +196,7 @@ function App() {
           {filteredTodos.map((todo, index) => (
             <div
               key={index}
-              className={`flex items-center justify-between p-3 rounded-xl ${
+              className={`flex items-center justify-between p-3 rounded-xl transition duration-300 hover:shadow-md hover:-translate-y-1 ${
                 darkMode ? "bg-slate-700" : "bg-slate-50"
               }`}
             >
@@ -202,21 +211,21 @@ function App() {
               <div className="flex gap-2 ml-3">
                 <button
                   onClick={() => toggleDone(index)}
-                  className="bg-green-500 text-white px-3 py-1 rounded-lg hover:bg-green-600"
+                  className="bg-green-500 text-white px-3 py-1 rounded-lg hover:bg-green-600 transition duration-300 ease-in-out"
                 >
                   ✔
                 </button>
 
                 <button
                   onClick={() => editTugas(index)}
-                  className="bg-yellow-500 text-white px-3 py-1 rounded-lg hover:bg-yellow-600"
+                  className="bg-yellow-500 text-white px-3 py-1 rounded-lg hover:bg-yellow-600 transition duration-300 ease-in-out"
                 >
                   ✏
                 </button>
 
                 <button
                   onClick={() => hapusTugas(index)}
-                  className="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600"
+                  className="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600 transition duration-300 ease-in-out"
                 >
                   ✕
                 </button>
