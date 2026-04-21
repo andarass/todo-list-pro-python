@@ -17,6 +17,8 @@ type Todo = {
   id: string;
   text: string;
   done: boolean;
+  deadline: string;
+  priority: string;
 };
 function App() {
   const [todos, setTodos] = useState<Todo[]>(() => {
@@ -30,6 +32,12 @@ function App() {
 
   // Untuk membuat input text
   const [input, setInput] = useState("");
+
+  // Variable untuk mengatur deadline
+  const [deadline, setDeadline] = useState("");
+
+  // Variable untuk mengatur prioritas
+  const [priority, setPriority] = useState("Low");
 
   // Untuk atur dark mode
   const [darkMode, setDarkMode] = useState(() => {
@@ -78,7 +86,16 @@ function App() {
   function tambahTugas() {
     if (input.trim() === "") return;
 
-    setTodos([...todos, { id: crypto.randomUUID(), text: input, done: false }]);
+    setTodos([
+      ...todos,
+      {
+        id: crypto.randomUUID(),
+        text: input,
+        done: false,
+        deadline: deadline,
+        priority: priority,
+      },
+    ]);
     setInput("");
   }
 
@@ -116,12 +133,14 @@ function App() {
   return (
     <div
       className={`min-h-screen flex items-center justify-center p-4 transition duration-500 ${
-        darkMode ? "bg-slate-900" : "bg-slate-100"
+        darkMode ? "bg-slate-900 text-white" : "bg-[#f7f7f5] text-[#191919]"
       }`}
     >
       <div
-        className={`w-full max-w-xl rounded-2xl shadow-xl p-6 ${
-          darkMode ? "bg-slate-800 text-white" : "bg-white text-black"
+        className={`w-full max-w-3xl mx-auto mt-10 border rounded-2xl p-8 ${
+          darkMode
+            ? "bg-slate-800 border-slate-700 text-white"
+            : "bg-white border-gray-200 text-black"
         }`}
       >
         <div className="flex justify-end mb-4">
@@ -132,25 +151,62 @@ function App() {
             {darkMode ? "☀ Light" : "🌙 Dark"}
           </button>
         </div>
-        <h1 className="text-3xl font-bold text-center mb-6">To-Do Web App</h1>
 
-        <div className="flex gap-2 mb-6">
+        <h1 className="text-5xl font-semibold leading-tight mb-2">Tasks</h1>
+        <p className="text-gray-500 text-sm mb-8">
+          Keep track of your priorities and deadlines.
+        </p>
+
+        <div
+          className={`rounded-xl p-4 space-y-3 mb-6 shadow-sm transition ${
+            darkMode
+              ? "bg-slate-800 border border-slate-700"
+              : "bg-white border border-gray-200"
+          }`}
+        >
           <input
             type="text"
             placeholder="Masukkan tugas..."
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            className={`flex-1 border rounded-xl px-4 py-2 outline-none focus:ring-2 focus:ring-blue-500 transition duration-300
+            className={`w-full text-lg py-2 outline-none placeholder:text-gray-400 transition duration-300
               ${
                 darkMode
                   ? "bg-slate-800 text-white placeholder:text-gray-400 border-slate-600"
                   : "bg-white text-black placeholder:text-gray-500 border-gray-300"
               }`}
           />
+        </div>
+
+        <div className="flex gap-2 mb-6">
+          <input
+            type="date"
+            value={deadline}
+            className={`border rounded-xl px-4 py-2 ${
+              darkMode
+                ? "bg-slate-800 text-white placeholder:text-gray-400 border-slate-600"
+                : "bg-white text-black placeholder:text-gray-500 border-gray-300"
+            }`}
+            onChange={(e) => setDeadline(e.target.value)}
+          />
+
+          <select
+            value={priority}
+            className={`border rounded-xl px-4 py-2 ${
+              darkMode
+                ? "bg-slate-800 text-white placeholder:text-gray-400 border-slate-600"
+                : "bg-white text-black placeholder:text-gray-500 border-gray-300"
+            }`}
+            onChange={(e) => setPriority(e.target.value)}
+          >
+            <option>Low</option>
+            <option>Medium</option>
+            <option>High</option>
+          </select>
 
           <button
             onClick={tambahTugas}
-            className="bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700 transition duration-300 ease-in-out"
+            className="px-5 py-2 rounded-xl bg-black text-white hover:scale-[1.02] active:scale-95 transition"
           >
             Tambah
           </button>
@@ -221,7 +277,11 @@ function App() {
         />
 
         {filteredTodos.length === 0 && (
-          <p className="text-center text-gray-400">Tidak ada tugas ditemukan</p>
+          <div className="text-center py-10 text-gray-400">
+            <p className="text-4xl mb-2">✨</p>
+            <p className="text-lg font-medium">No tasks yet</p>
+            <p className="text-sm">Start by adding your first priority.</p>
+          </div>
         )}
 
         <div className="space-y-3">
