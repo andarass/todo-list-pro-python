@@ -1,6 +1,20 @@
 import { useEffect, useState } from "react";
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+  arrayMove,
+} from "@dnd-kit/sortable";
+import SortableItem from "../src/SortableItem";
 
 type Todo = {
+  id: string;
   text: string;
   done: boolean;
 };
@@ -33,6 +47,15 @@ function App() {
   // Variable untuk state search (menyimpan tulisan user ketika search dengan menggambungkan status + filter)
   const [search, setSearch] = useState("");
 
+  // Variable untuk melakukan sensors
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 3,
+      },
+    })
+  );
+
   // Variable untuk memfilter all, pending dan done + component untuk search engine (cocokFilter untuk cek status, cocokSearch untuk cari tugas/search engine)
   const filteredTodos = todos.filter((todo) => {
     const cocokFilter =
@@ -55,30 +78,39 @@ function App() {
   function tambahTugas() {
     if (input.trim() === "") return;
 
-    setTodos([...todos, { text: input, done: false }]);
+    setTodos([...todos, { id: crypto.randomUUID(), text: input, done: false }]);
     setInput("");
   }
 
-  function editTugas(indexEdit: number) {
-    const textBaru = prompt("Edit tugas:", todos[indexEdit].text);
+  function editTugas(id: string) {
+    const target = todos.find((t) => t.id === id);
+    const textBaru = prompt("Edit tugas:", target?.text);
 
-    if (!textBaru || textBaru.trim() === "") return;
+    if (!textBaru) return;
 
-    const tugasBaru = [...todos];
-    tugasBaru[indexEdit].text = textBaru;
+    setTodos(todos.map((t) => (t.id === id ? { ...t, text: textBaru } : t)));
+  }
 
+  function hapusTugas(id: string) {
+    setTodos(todos.filter((t) => t.id !== id));
+  }
+
+  function toggleDone(id: string) {
+    const tugasBaru = todos.map((t) =>
+      t.id === id ? { ...t, done: !t.done } : t
+    );
     setTodos(tugasBaru);
   }
 
-  function hapusTugas(indexHapus: number) {
-    const tugasBaru = todos.filter((_, index) => index !== indexHapus);
-    setTodos(tugasBaru);
-  }
+  function handleDragEnd(event: any) {
+    const { active, over } = event;
 
-  function toggleDone(indexTarget: number) {
-    const tugasBaru = [...todos];
-    tugasBaru[indexTarget].done = !tugasBaru[indexTarget].done;
-    setTodos(tugasBaru);
+    if (!over || active.id === over.id) return;
+
+    const oldIndex = todos.findIndex((item) => item.id === active.id);
+    const newIndex = todos.findIndex((item) => item.id === over.id);
+
+    setTodos(arrayMove(todos, oldIndex, newIndex));
   }
 
   return (
@@ -193,45 +225,27 @@ function App() {
         )}
 
         <div className="space-y-3">
-          {filteredTodos.map((todo, index) => (
-            <div
-              key={index}
-              className={`flex items-center justify-between p-3 rounded-xl transition duration-300 hover:shadow-md hover:-translate-y-1 ${
-                darkMode ? "bg-slate-700" : "bg-slate-50"
-              }`}
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
+          >
+            <SortableContext
+              items={filteredTodos.map((t) => t.id)}
+              strategy={verticalListSortingStrategy}
             >
-              <span
-                className={`flex-1 ${
-                  todo.done ? "line-through text-gray-400" : ""
-                }`}
-              >
-                {todo.text}
-              </span>
-
-              <div className="flex gap-2 ml-3">
-                <button
-                  onClick={() => toggleDone(index)}
-                  className="bg-green-500 text-white px-3 py-1 rounded-lg hover:bg-green-600 transition duration-300 ease-in-out"
-                >
-                  ✔
-                </button>
-
-                <button
-                  onClick={() => editTugas(index)}
-                  className="bg-yellow-500 text-white px-3 py-1 rounded-lg hover:bg-yellow-600 transition duration-300 ease-in-out"
-                >
-                  ✏
-                </button>
-
-                <button
-                  onClick={() => hapusTugas(index)}
-                  className="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600 transition duration-300 ease-in-out"
-                >
-                  ✕
-                </button>
-              </div>
-            </div>
-          ))}
+              {filteredTodos.map((todo) => (
+                <SortableItem
+                  key={todo.id}
+                  todo={todo}
+                  toggleDone={toggleDone}
+                  hapusTugas={hapusTugas}
+                  editTugas={editTugas}
+                  darkMode={darkMode}
+                />
+              ))}
+            </SortableContext>
+          </DndContext>
         </div>
       </div>
     </div>
